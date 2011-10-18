@@ -1,5 +1,7 @@
 CC      = /usr/bin/gcc
-CFLAGS  = -Wall -std=c89
+DEBUG	= -g
+CFLAGS  = -Wall -std=c89 -c $(DEBUG)
+LFLAGS	= -Wall $(DEBUG)
 
 all: hello_world temperaturumwandlung
 
@@ -8,10 +10,10 @@ hello_world: hello_world.o
 temperaturumwandlung: temperaturumwandlung.o
 
 %: %.o
-	$(CC) $(CFLAGS) -o $@ $< 
+	$(CC) $(LFLAGS) -o $@ $< 
 
 %.o: %.c
-	$(CC) $(CFLAGS) -c $<
+	$(CC) $(CFLAGS) $<
 
 clean:
 	rm *.o
