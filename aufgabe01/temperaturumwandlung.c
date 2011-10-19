@@ -15,6 +15,8 @@ int main (void)
 
 	selection = select_fahrenheit_or_celsius ();
 	current_step = LOWER;
+	printf ("%-5c%-3c\n", (selection == 'c' ? 'C' : 'F'),
+			(selection == 'c' ? 'F' : 'C') );
 	while (current_step <= UPPER)
 	{
 		if (selection == 'c')
