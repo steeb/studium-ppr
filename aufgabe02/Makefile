@@ -5,7 +5,7 @@ LFLAGS	= -Wall $(DEBUG)
 
 OBJ = main.o ulam.o
 
-all: ulam
+all: splint ulam doxygen
 
 ulam: $(OBJ)
 	$(CC) $(LFLAGS) -o $@ $< 
@@ -13,8 +13,18 @@ ulam: $(OBJ)
 %.o: %.c
 	$(CC) $(CFLAGS) $<
 
+check: splint
+
+splint:
+	splint *.c -weak -booltype BOOL -boolfalse FALSE -booltrue TRUE +predboolint +noret +usedef +infloops +casebreak -initallelements -incompletetype -fixedformalarray
+
+doc: doxygen
+
+doxygen:
+	doxygen ../ppr_doxygen.cfg
+
 clean:
 	rm *.o
 
 cleanall:
-	rm ulam *.o	
+	rm -r ulam *.o doxygen
