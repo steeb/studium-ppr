@@ -1,5 +1,3 @@
-#include <stdio.h>
-
 int ulam_max (int a0)
 {
     int max = -1;
@@ -19,7 +17,6 @@ int ulam_twins (int limit)
 
     for (i = limit - 1; i >= 2; i--)
     {
-        /*printf ("%2d %2d: %3d %3d\n", i, i + 1, ulam_max (i), ulam_max (i + 1));*/
         if (ulam_max (i) == ulam_max (i + 1) )
         {
             return i;
