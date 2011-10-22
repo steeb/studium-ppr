@@ -3,32 +3,54 @@
 int ulam_max (int a0)
 {
     int max = -1;
+    int an = a0;
     
-    while (a0 > 1)
+    while (an > 1)
     {
-        a0 = (a0 % 2 == 0) ? a0 / 2 : 3 * a0 + 1;
-        max = (max > a0) ? max : a0;
+        an = (an % 2 == 0) ? an / 2 : 3 * an + 1;
+        max = (max > an) ? max : an;
     }
-    return max;
+    return (a0 == 1 ? 1 : max);
 }
 
 int ulam_twins (int limit)
 {
-    int twin = -1;
     int i;
 
-    for (i = 1; i <= limit; i++)
+    for (i = limit - 1; i >= 2; i--)
     {
+        /*printf ("%2d %2d: %3d %3d\n", i, i + 1, ulam_max (i), ulam_max (i + 1));*/
         if (ulam_max (i) == ulam_max (i + 1) )
         {
-            twin = i;
+            return i;
         }
     }
-    return twin;
+    return -1;
 }
 
 int ulam_multiples (int limit, int number)
 {
-    return 0;
+    int i;
+    int j;
+    int multi;
+
+    if (number == 2)
+    {
+        return ulam_twins (limit);
+    }
+    for (i = limit; i >= number; i--)
+    {
+        multi = ulam_max (i);
+        for (j = 1; j <= number - 1; j++)
+        {
+            multi = (multi == ulam_max (i - j) ) ? multi : -1;
+        }
+        if (multi != -1)
+        {
+            return i - number + 1;
+        }
+    }
+        
+    return -1;
 }
 
