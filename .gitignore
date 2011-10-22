@@ -1,2 +1,5 @@
 *.o
+*.od
+doxygen
 ulam
+debug
