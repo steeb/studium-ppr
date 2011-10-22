@@ -1,6 +1,20 @@
+/**
+ * @mainpage Collatz-Problem
+ *
+ * Diese Aufgabe behandelt drei ULAM-Funktionen
+ *
+ * @author Stefan 'steeb' Ebert
+ * @date 2011-10-22
+ */
+
 #include <stdio.h>
 #include "ulam.c"
 
+/**
+ * Ein paar Tests
+ *
+ * @return 0
+ */
 int main(void)
 {
     printf ("ulam_max (5): %d | 16\n", ulam_max (5) );
