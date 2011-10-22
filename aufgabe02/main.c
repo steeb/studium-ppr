@@ -1,7 +1,7 @@
 /**
  * @mainpage Collatz-Problem
  *
- * Diese Aufgabe behandelt drei ULAM-Funktionen
+ * @file Ruft ULAM-Funktionen auf
  *
  * @author Stefan 'steeb' Ebert
  * @date 2011-10-22
