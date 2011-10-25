@@ -17,8 +17,11 @@
  */
 int main(void)
 {
-    printf ("ulam_max (5): %d | 16\n", ulam_max (5) );
-    printf ("ulam_max (7): %d | 52\n", ulam_max (7) );
+    printf ("ulam_max (-5): %d | -1\n", ulam_max (-5) );
+    printf ("ulam_max (0): %d | -1\n", ulam_max (0) );
+    printf ("ulam_max (1): %d | 1\n", ulam_max (1) );
+    printf ("ulam_max (2): %d | 2\n", ulam_max (2) );
+    printf ("ulam_max (4): %d | 4\n", ulam_max (4) );
     printf ("ulam_twins (10): %d | 5\n", ulam_twins (10) );
     printf ("ulam_twins (5): %d | -1\n", ulam_twins (5) );
     printf ("ulam_multiple (10, 2): %d | 5\n", ulam_multiples (10, 2) );

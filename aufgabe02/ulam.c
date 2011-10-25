@@ -16,7 +16,7 @@
  */
 int ulam_max (int a0)
 {
-    int max = -1;
+    int max = a0;
     int an = a0;
     
     while (an > 1)
@@ -24,7 +24,7 @@ int ulam_max (int a0)
         an = (an % 2 == 0) ? an / 2 : 3 * an + 1;
         max = (max > an) ? max : an;
     }
-    return (a0 == 1 ? 1 : max);
+    return (a0 < 1 ? -1 : max);
 }
 
 /**
