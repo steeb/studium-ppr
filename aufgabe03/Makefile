@@ -3,7 +3,7 @@ DEBUG	= -g
 CFLAGS  = -Wall -std=c89 -c
 LFLAGS	= -Wall
 
-OBJ		= main.o det.c
+OBJ		= main.o det.o
 OBJD	= main.od det.od
 
 all: splint det doxygen
@@ -31,7 +31,7 @@ doxygen:
 	doxygen ../ppr_doxygen.cfg
 
 clean:
-	rm *.o
+	rm *.o *.od
 
 cleanall:
-	rm -r det *.o doxygen
+	rm -r det *.o doxygen; rm *.od

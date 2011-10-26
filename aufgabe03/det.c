@@ -1,6 +1,7 @@
-#define MAX_SIZE 5
+#include <string.h>
+#include <stdio.h>
 
-double get_determinant (double matrix[MAX_SIZE][MAX_SIZE], int size);
+#define MAX_SIZE 10
 
 double get_determinant (double matrix[MAX_SIZE][MAX_SIZE], int size)
 {
@@ -14,11 +15,34 @@ double get_determinant (double matrix[MAX_SIZE][MAX_SIZE], int size)
     }
     else
     {
+        double det = 0;
+        double matrix2[MAX_SIZE][MAX_SIZE]; 
         int i;
+        int j;
+        int p;
 
-        for (i = 0; i < size - 1; i++)
+        for (p = 0; p < size; p++)
         {
-            
-        }        
+            int h = 0;
+            int k = 0;
+            for (i = 1; i < size; i++)
+            {
+                for (j = 0; j < size; j++)
+                {
+                    if (j != p)
+                    {
+                        matrix2[h][k] = matrix[i][j];
+                        k++;
+                        if (k == size - 1)
+                        {
+                            h++;
+                            k = 0;
+                        }
+                    }
+                }
+            }
+            det += (p % 2 == 0 ? 1 : -1) * matrix[0][p] * get_determinant(matrix2, size - 1); 
+        }
+        return det;
     }
 }
