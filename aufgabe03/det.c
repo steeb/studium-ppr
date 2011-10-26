@@ -16,15 +16,17 @@ double get_determinant (double matrix[MAX_SIZE][MAX_SIZE], int size)
     else
     {
         double det = 0;
-        double matrix2[MAX_SIZE][MAX_SIZE]; 
+        double matrix2[MAX_SIZE][MAX_SIZE];
+        int p;
         int i;
         int j;
-        int p;
+        int h;
+        int k;
 
         for (p = 0; p < size; p++)
         {
-            int h = 0;
-            int k = 0;
+            h = 0;
+            k = 0;
             for (i = 1; i < size; i++)
             {
                 for (j = 0; j < size; j++)
@@ -44,5 +46,20 @@ double get_determinant (double matrix[MAX_SIZE][MAX_SIZE], int size)
             det += (p % 2 == 0 ? 1 : -1) * matrix[0][p] * get_determinant(matrix2, size - 1); 
         }
         return det;
+    }
+}
+
+void print_matrix (double matrix[MAX_SIZE][MAX_SIZE], int size)
+{
+    int i;
+    int j;
+
+    for (i = 0; i < size; i++)
+    {
+        for (j = 0; j < size; j++)
+        {
+            printf ("%3.1f ", matrix[i][j]);
+        }
+        printf ("\n");
     }
 }

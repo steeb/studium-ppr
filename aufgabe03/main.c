@@ -10,6 +10,7 @@ int main (void)
         {2.0, 8.0, 2.0, 10.0},
         {0.0, 1.0, 1.0, 0.0},
     };
-    printf ("%f", get_determinant (matrix, 4));
+    print_matrix (matrix, 4);
+    printf ("%f\n", get_determinant (matrix, 4));
     return 0;
 }
