@@ -1,7 +1,7 @@
 CC      = /usr/bin/gcc
 DEBUG	= -g
-CFLAGS  = -Wall -std=c89 -c
-LFLAGS	= -Wall
+CFLAGS  = -Wall -Wextra -std=c89 -pedantic-errors -c
+LFLAGS	= -Wall -Wextra
 
 OBJ		= main.o det.o
 OBJD	= main.od det.od

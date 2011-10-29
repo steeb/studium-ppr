@@ -93,7 +93,7 @@ void print_matrix (double matrix[MAX_SIZE][MAX_SIZE], int size)
     {
         for (j = 0; j < size; j++)
         {
-            printf ("%3.1f ", matrix[i][j]);
+            printf ("%6.1f ", matrix[i][j]);
         }
         printf ("\n");
     }
