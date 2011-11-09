@@ -36,14 +36,6 @@ void map_pos_to_generation_array (const unsigned int pos_nr, unsigned int *vec_p
 }
 
 /**
- *
- */
-int map_pos_to_generation_array_wp (const int pos_nr)
-{
-    return (pos_nr / CHAR_BIT) * 10 + (pos_nr % CHAR_BIT);
-}
-
-/**
  * Gibt eine Seperatorzeile für Begrenzung der einzelenen Zeilen aus.
  */
 void print_horizontal_seperator (void)
