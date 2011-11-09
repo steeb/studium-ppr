@@ -3,14 +3,18 @@
 
 int main (void)
 {
-    char spielfeld[] = "000000"
-                       "111111"
-                       "000000"
-                       "111111"
-                       "000000";
-    char rueckgabe[CELLS + 1];
+    char spielfeld[] = "00000000"
+                       "11111111"
+                       "00000000"
+                       "11111111"
+                       "00000000"
+                       "11111111"
+                       "00000000"
+                       "11111111";
+    char rueckgabe[CELLS + 1] = {0}; 
     set_generation_from_string (spielfeld);
     get_generation_as_string (rueckgabe);
-    printf ("%s", rueckgabe);
+    printf ("i: %s\no: %s\n", spielfeld, rueckgabe);
+    print_generation ();
     return 0;
 }

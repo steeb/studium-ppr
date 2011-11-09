@@ -4,9 +4,9 @@
 #include <string.h>
 
 /* Anzhal Spielfeld Zeilen */
-#define ALL_ROWS 5
+#define ALL_ROWS 8 
 /* Anzahl Spielfeld Spalten */
-#define ALL_COLUMNS 6
+#define ALL_COLUMNS 8 
 
 /* Anzahl aller Felder des Spielfelds */
 #define CELLS ALL_ROWS * ALL_COLUMNS
@@ -28,15 +28,11 @@ unsigned char generation[ARRAY_SIZE];
 /**
  *
  */
-void map_pos_to_generation_array (const int pos_nr, int *vec_pos, 
-                                  int *vec_bit_pos)
+void map_pos_to_generation_array (const unsigned int pos_nr, unsigned int *vec_pos, 
+                                  unsigned char *vec_bit_pos)
 {
-    /* 
     *vec_pos = (pos_nr / CHAR_BIT);
     *vec_bit_pos = (pos_nr % CHAR_BIT);
-    *vec_pos = 23;
-    *vec_bit_pos = 42;
-    */
 }
 
 /**
@@ -66,19 +62,26 @@ void print_horizontal_seperator (void)
  */
 void print_generation (void)
 {
-    int j; /* Laufvariable für die vertikale */
-    int i; /* Laufvariable für die horizontale */
+    unsigned int i;
+    unsigned char mask;
+    unsigned int vec_pos = 0;
+    unsigned char vec_bit_pos = 0;
 
-    for (j = 0; j < ALL_ROWS; j++)
+    for (i = 0; i < CELLS; i++)
     {
-        print_horizontal_seperator ();
-        for (i = 0; i < ALL_COLUMNS; i++)
+        map_pos_to_generation_array (i, &vec_pos, &vec_bit_pos);
+        if (vec_bit_pos == 0)
         {
-           /* printf ("| %s ", ...); */
+            print_horizontal_seperator ();
         }
-        printf ("|\n");
-        print_horizontal_seperator ();
+        mask = (unsigned char)1 << vec_bit_pos;
+        printf ("| %c ", (generation[vec_pos] & mask) == mask ? 'o' : ' ');
+        if (vec_bit_pos == CHAR_BIT - 1)
+        {
+            printf ("|\n");
+        }
     }
+    print_horizontal_seperator ();
 }
 
 /**
@@ -89,21 +92,14 @@ void print_generation (void)
 void set_generation_from_string (char string[])
 {
     unsigned int i;
+    unsigned int vec_pos = 0;
+    unsigned char vec_bit_pos = 0;
 
-    printf ("mööp");
-
-    for (i = 0; i < strlen(string); i++)
+    for (i = 0; i < CELLS; i++)
     {
-        int vec_pos = 0;
-        int vec_bit_pos = 0;
-
-        printf ("%c", string[i]);
-        /* map_pos_to_generation_array(i, &vec_pos, &vec_bit_pos); */
-        printf ("\nSZF: %d %d", vec_pos, vec_bit_pos);
-        fflush(stdout);
-        generation[vec_pos] ^= (string[i] << vec_bit_pos);
+        map_pos_to_generation_array (i, &vec_pos, &vec_bit_pos);
+        generation[vec_pos] |= (string[i] - '0') << vec_bit_pos;
     }
-
 }
 
 /**
@@ -111,20 +107,18 @@ void set_generation_from_string (char string[])
  */
 void get_generation_as_string (char string[])
 {
-    int i;
-    int j;
+    unsigned int i;
+    unsigned int vec_pos = 0;
+    unsigned char vec_bit_pos = 0;
+    unsigned char mask;
 
-    for (i = 0; j < ARRAY_SIZE; i++)
+    for (i = 0; i < CELLS; i++)
     {
-        for (j = 0; j < CHAR_BIT; j++)
-        {
-            unsigned char mask;
-           
-            mask = 1 << j;
-            string[i * CHAR_BIT +j] = (generation[i] & mask) == mask ? '1' 
-                                                                     : '0';
-        }
+        map_pos_to_generation_array (i, &vec_pos, &vec_bit_pos);
+        mask = (unsigned char)1 << vec_bit_pos;
+        string[i] = (generation[vec_pos] & mask) == mask ? '1' : '0';
     }
+    string[i] = '\0';
 }
 
 /**
