@@ -3,5 +3,6 @@
 *.swp
 doxygen
 ulam
-debug
+*debug
 det
+gol
