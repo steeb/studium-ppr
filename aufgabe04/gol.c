@@ -68,7 +68,7 @@ void print_generation (void)
         }
         mask = (unsigned char)1 << vec_bit_pos;
         printf ("| %c ", (generation[vec_pos] & mask) == mask ? 'o' : ' ');
-        if (vec_bit_pos == CHAR_BIT - 1)
+        if (vec_bit_pos == (unsigned int)CHAR_BIT - 1)
         {
             printf ("|\n");
         }
