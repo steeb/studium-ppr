@@ -22,17 +22,153 @@ typedef enum
 }
 BOOL;
 
+typedef enum
+{
+    TOPLEFT,
+    TOP,
+    TOPRIGHT,
+    RIGHT,
+    BOTTOMRIGHT,
+    BOTTOM,
+    BOTTOMLEFT,
+    LEFT
+}
+DIRECTION;
+
 /* In dieser Variable wird die aktuelle Generation abgelegt */
 unsigned char generation[ARRAY_SIZE];
 
 /**
+ * Errechnet zu der pos_nr im linearisierten Spielfeld die echte Position
+ * im Speicher.
  *
+ * @param pos_nr Position im Spielfeld
+ * @param vec_pos Position im Vector
+ * @param vec_bit_pos Welches bit im Vector
  */
-void map_pos_to_generation_array (const unsigned int pos_nr, unsigned int *vec_pos, 
-                                  unsigned char *vec_bit_pos)
+void map_pos_to_generation_array (const unsigned int pos_nr, 
+                                  unsigned int * vec_pos, 
+                                  unsigned char * vec_bit_pos)
 {
-    *vec_pos = (pos_nr / CHAR_BIT);
-    *vec_bit_pos = (pos_nr % CHAR_BIT);
+    *vec_pos = pos_nr / CHAR_BIT;
+    *vec_bit_pos = pos_nr % CHAR_BIT;
+}
+
+void map_pos_to_coords (const unsigned int pos_nr,
+                        unsigned int * x,
+                        unsigned int * y)
+{
+    *x = pos_nr / ALL_COLUMNS;
+    *y = pos_nr % ALL_ROWS;
+}
+
+void map_coords_to_generation_array (const unsigned int x,
+                                     const unsigned int y,
+                                     unsigned int * vec_pos,
+                                     unsigned char * vec_bit_pos)
+{
+    unsigned int pos_nr = ALL_COLUMNS * x + y;
+    map_pos_to_generation_array (pos_nr, vec_pos, vec_bit_pos);
+}
+
+BOOL is_creature (const unsigned int x,
+                  const unsigned int y)
+{
+    unsigned char mask;
+    unsigned int vec_pos = 0;
+    unsigned char vec_bit_pos = 0;
+
+    map_coords_to_generation_array (x, y, &vec_pos, &vec_bit_pos);
+    mask = (unsigned char)1 << vec_bit_pos;
+    return (generation[vec_pos] & mask) == mask;
+}
+
+void kill_creature (const unsigned int x,
+                    const unsigned int y)
+{
+    unsigned int vec_pos = 0;
+    unsigned char vec_bit_pos = 0;
+
+    map_coords_to_generation_array (x, y, &vec_pos, &vec_bit_pos);
+    generation[vec_pos] ^= ~((unsigned char)1 << vec_bit_pos);
+}
+
+void create_creature (const unsigned int x,
+                      const unsigned int y)
+{
+    unsigned int vec_pos = 0;
+    unsigned char vec_bit_pos = 0;
+
+    map_coords_to_generation_array (x, y, &vec_pos, &vec_bit_pos);
+    generation[vec_pos] |= (unsigned char)1 << vec_bit_pos;
+}
+
+BOOL is_neighbour_creature (const unsigned int pos_nr,
+                            const DIRECTION direction)
+{
+    unsigned int x = 0;
+    unsigned int y = 0;
+
+    map_pos_to_coords (pos_nr, &x, &y);
+    switch (direction)
+    {
+        case TOPLEFT:
+            return (x <= 0 || y <= 0) 
+                ? FALSE 
+                : is_creature (x - 1, y - 1);
+            break;
+        case TOP:
+            return (y <= 0) 
+                ? FALSE 
+                : is_creature (x, y - 1);
+            break;
+        case TOPRIGHT:
+            return (x >= ALL_ROWS - 1 || y <= 0) 
+                ? FALSE 
+                : is_creature (x + 1, y - 1);
+            break;
+        case RIGHT:
+            return (x >= ALL_ROWS - 1) 
+                ? FALSE
+                : is_creature (x + 1, y);
+            break;
+        case BOTTOMRIGHT:
+            return (x >= ALL_ROWS - 1 || y >= ALL_COLUMNS - 1)
+                ? FALSE
+                : is_creature (x + 1, y + 1);
+            break;
+        case BOTTOM:
+            return (y >= ALL_COLUMNS - 1)
+                ? FALSE
+                : is_creature (x, y + 1);
+            break;
+        case BOTTOMLEFT:
+            return (x <= 0 || y > ALL_COLUMNS - 1)
+                ? FALSE
+                : is_creature (x - 1, y + 1);
+            break;
+        case LEFT:
+            return (x <= 0)
+                ? FALSE
+                : is_creature (x - 1, y);
+            break;
+    }
+    return FALSE;
+}
+
+unsigned int count_neigtbour_creatures (const unsigned int pos_nr)
+{
+    DIRECTION direction;
+    unsigned int creatures = 0;
+
+    for (direction = TOPLEFT; direction < LEFT; direction++)
+    {
+        if (is_neighbour_creature (pos_nr, direction))
+        {
+            creatures++;
+        }
+    }
+    return creatures;
 }
 
 /**
@@ -120,6 +256,29 @@ void get_generation_as_string (char string[])
  */
 BOOL set_next_generation (void)
 {
+    unsigned char oldGeneration[ARRAY_SIZE];
+    size_t array_size = (size_t)ARRAY_SIZE;
+    unsigned int i;
+
+    /* memcpy (&generation, &oldGeneration, array_size); */
+
+    for (i = 0; i < CELLS; i++)
+    {
+        unsigned int creatures = count_neigtbour_creatures (i);
+        unsigned int x = 0;
+        unsigned int y = 0;
+
+         map_pos_to_coords (i, &x, &y);
+        if (creatures == 2 || creatures == 3)
+        {
+            create_creature (x, y);
+        }
+        else
+        {
+            kill_creature (x, y);
+        }
+    }
+
     return FALSE;
 }
 
