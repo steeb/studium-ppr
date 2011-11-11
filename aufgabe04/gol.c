@@ -38,6 +38,8 @@ DIRECTION;
 /* In dieser Variable wird die aktuelle Generation abgelegt */
 unsigned char generation[ARRAY_SIZE];
 
+unsigned char next_generation[ARRAY_SIZE];
+
 /**
  * Errechnet zu der pos_nr im linearisierten Spielfeld die echte Position
  * im Speicher.
@@ -77,10 +79,14 @@ BOOL is_creature (const unsigned int x,
     unsigned char mask;
     unsigned int vec_pos = 0;
     unsigned char vec_bit_pos = 0;
+    BOOL tmp;
 
+    printf ("  check creature at %d x %d\n", x, y);
     map_coords_to_generation_array (x, y, &vec_pos, &vec_bit_pos);
     mask = (unsigned char)1 << vec_bit_pos;
-    return (generation[vec_pos] & mask) == mask;
+    tmp = (generation[vec_pos] & mask) == mask;
+    printf (         "%x & %x == %x = %x\n", generation[vec_pos], mask, mask, tmp);
+    return tmp;
 }
 
 void kill_creature (const unsigned int x,
@@ -90,7 +96,8 @@ void kill_creature (const unsigned int x,
     unsigned char vec_bit_pos = 0;
 
     map_coords_to_generation_array (x, y, &vec_pos, &vec_bit_pos);
-    generation[vec_pos] ^= ~((unsigned char)1 << vec_bit_pos);
+    next_generation[vec_pos] = generation[vec_pos] 
+        ^ ~((unsigned char)1 << vec_bit_pos);
 }
 
 void create_creature (const unsigned int x,
@@ -100,7 +107,8 @@ void create_creature (const unsigned int x,
     unsigned char vec_bit_pos = 0;
 
     map_coords_to_generation_array (x, y, &vec_pos, &vec_bit_pos);
-    generation[vec_pos] |= (unsigned char)1 << vec_bit_pos;
+    next_generation[vec_pos] = generation[vec_pos] 
+        | (unsigned char)1 << vec_bit_pos;
 }
 
 BOOL is_neighbour_creature (const unsigned int pos_nr,
@@ -110,6 +118,7 @@ BOOL is_neighbour_creature (const unsigned int pos_nr,
     unsigned int y = 0;
 
     map_pos_to_coords (pos_nr, &x, &y);
+    printf ("pos: %d: %d x %d -> %d\n", pos_nr, x, y, direction);
     switch (direction)
     {
         case TOPLEFT:
@@ -165,6 +174,7 @@ unsigned int count_neigtbour_creatures (const unsigned int pos_nr)
     {
         if (is_neighbour_creature (pos_nr, direction))
         {
+            printf ("             #\n");
             creatures++;
         }
     }
@@ -256,11 +266,9 @@ void get_generation_as_string (char string[])
  */
 BOOL set_next_generation (void)
 {
-    unsigned char oldGeneration[ARRAY_SIZE];
-    size_t array_size = (size_t)ARRAY_SIZE;
     unsigned int i;
 
-    /* memcpy (&generation, &oldGeneration, array_size); */
+    memcpy (&generation, &next_generation, sizeof(generation));
 
     for (i = 0; i < CELLS; i++)
     {
@@ -268,7 +276,7 @@ BOOL set_next_generation (void)
         unsigned int x = 0;
         unsigned int y = 0;
 
-         map_pos_to_coords (i, &x, &y);
+        map_pos_to_coords (i, &x, &y);
         if (creatures == 2 || creatures == 3)
         {
             create_creature (x, y);
@@ -278,6 +286,8 @@ BOOL set_next_generation (void)
             kill_creature (x, y);
         }
     }
+
+    memcpy (&next_generation, &generation, sizeof(generation));
 
     return FALSE;
 }
