@@ -4,9 +4,9 @@
 #include <string.h>
 
 /* Anzhal Spielfeld Zeilen */
-#define ALL_ROWS 8 
+#define ALL_ROWS 3 
 /* Anzahl Spielfeld Spalten */
-#define ALL_COLUMNS 8 
+#define ALL_COLUMNS 3 
 
 /* Anzahl aller Felder des Spielfelds */
 #define CELLS ALL_ROWS * ALL_COLUMNS
@@ -79,14 +79,10 @@ BOOL is_creature (const unsigned int x,
     unsigned char mask;
     unsigned int vec_pos = 0;
     unsigned char vec_bit_pos = 0;
-    BOOL tmp;
 
-    printf ("  check creature at %d x %d\n", x, y);
     map_coords_to_generation_array (x, y, &vec_pos, &vec_bit_pos);
     mask = (unsigned char)1 << vec_bit_pos;
-    tmp = (generation[vec_pos] & mask) == mask;
-    printf (         "%x & %x == %x = %x\n", generation[vec_pos], mask, mask, tmp);
-    return tmp;
+    return (generation[vec_pos] & mask) == mask;
 }
 
 void kill_creature (const unsigned int x,
@@ -202,19 +198,18 @@ void print_generation (void)
 {
     unsigned int i;
     unsigned char mask;
-    unsigned int vec_pos = 0;
-    unsigned char vec_bit_pos = 0;
+    unsigned int x;
+    unsigned int y;
 
     for (i = 0; i < CELLS; i++)
     {
-        map_pos_to_generation_array (i, &vec_pos, &vec_bit_pos);
-        if (vec_bit_pos == 0)
+        map_pos_to_coords (i, &x, &y);
+        if (y == 0)
         {
             print_horizontal_seperator ();
         }
-        mask = (unsigned char)1 << vec_bit_pos;
-        printf ("| %c ", (generation[vec_pos] & mask) == mask ? 'o' : ' ');
-        if (vec_bit_pos == (unsigned char)CHAR_BIT - 1)
+        printf ("| %c ", is_creature (x, y) ? 'o' : ' ');
+        if (y == ALL_ROWS - 1)
         {
             printf ("|\n");
         }
