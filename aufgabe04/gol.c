@@ -70,6 +70,7 @@ void map_coords_to_generation_array (const unsigned int x,
                                      unsigned char * vec_bit_pos)
 {
     unsigned int pos_nr = ALL_COLUMNS * x + y;
+    printf ("  %d\n", pos_nr);
     map_pos_to_generation_array (pos_nr, vec_pos, vec_bit_pos);
 }
 
@@ -82,6 +83,7 @@ BOOL is_creature (const unsigned int x,
 
     map_coords_to_generation_array (x, y, &vec_pos, &vec_bit_pos);
     mask = (unsigned char)1 << vec_bit_pos;
+    printf ("%d x %d: %d\n", x, y, vec_bit_pos);
     return (generation[vec_pos] & mask) == mask;
 }
 
@@ -114,7 +116,6 @@ BOOL is_neighbour_creature (const unsigned int pos_nr,
     unsigned int y = 0;
 
     map_pos_to_coords (pos_nr, &x, &y);
-    printf ("pos: %d: %d x %d -> %d\n", pos_nr, x, y, direction);
     switch (direction)
     {
         case TOPLEFT:
@@ -158,7 +159,6 @@ BOOL is_neighbour_creature (const unsigned int pos_nr,
                 : is_creature (x - 1, y);
             break;
     }
-    return FALSE;
 }
 
 unsigned int count_neigtbour_creatures (const unsigned int pos_nr)
@@ -170,7 +170,6 @@ unsigned int count_neigtbour_creatures (const unsigned int pos_nr)
     {
         if (is_neighbour_creature (pos_nr, direction))
         {
-            printf ("             #\n");
             creatures++;
         }
     }
@@ -263,8 +262,6 @@ BOOL set_next_generation (void)
 {
     unsigned int i;
 
-    memcpy (&generation, &next_generation, sizeof(generation));
-
     for (i = 0; i < CELLS; i++)
     {
         unsigned int creatures = count_neigtbour_creatures (i);
@@ -272,17 +269,25 @@ BOOL set_next_generation (void)
         unsigned int y = 0;
 
         map_pos_to_coords (i, &x, &y);
-        if (creatures == 2 || creatures == 3)
+        if (!is_creature (x, x))
         {
-            create_creature (x, y);
+            printf ("%d x %d: %d neigtbours (dead)\n", x, y, creatures);
+            if (creatures == 3)
+            {
+                create_creature (x, y);
+            }
         }
         else
         {
-            kill_creature (x, y);
+            printf ("%d x %d: %d neigtbours (live)\n", x, y, creatures);
+            if (creatures == 2 || creatures == 3)
+            {
+                create_creature (x, y);
+            }
         }
     }
 
-    memcpy (&next_generation, &generation, sizeof(generation));
+    memcpy (&generation, &next_generation, sizeof(generation));
 
     return FALSE;
 }

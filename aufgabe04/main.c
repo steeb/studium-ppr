@@ -3,20 +3,15 @@
 
 int main (void)
 {
-    char spielfeld[] = "10000000"
-                       "01110000"
-                       "00000000"
-                       "00000000"
-                       "00000000"
-                       "00000000"
-                       "00000000"
-                       "00000000";
+    char spielfeld[] = "010"
+                       "000"
+                       "000";
     char rueckgabe[CELLS + 1] = {0}; 
+
     set_generation_from_string (spielfeld);
-    get_generation_as_string (rueckgabe);
-    printf ("i: %s\no: %s\n", spielfeld, rueckgabe);
-    print_generation ();
+    /*/print_generation ();
     set_next_generation ();
-    print_generation ();
+    print_generation ();*/
+    printf ("%d\n", count_neigtbour_creatures(4));
     return 0;
 }
