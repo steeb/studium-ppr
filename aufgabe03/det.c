@@ -53,19 +53,21 @@ double get_determinant (double matrix[MAX_SIZE][MAX_SIZE], int size)
             {
                 for (j = 0; j < size; j++)
                 {
-                    if (j != p)
+                    if (j == p)
                     {
-                        matrix2[h][k] = matrix[i][j];
-                        k++;
-                        if (k == size - 1)
-                        {
-                            h++;
-                            k = 0;
-                        }
+                        continue;
+                    }
+                    matrix2[h][k] = matrix[i][j];
+                    k++;
+                    if (k == size - 1)
+                    {
+                        h++;
+                        k = 0;
                     }
                 }
             }
-            det += (p % 2 == 0 ? 1 : -1) * matrix[0][p] * get_determinant(matrix2, size - 1); 
+            det += (p % 2 == 0 ? 1 : -1) * matrix[0][p] 
+                * get_determinant(matrix2, size - 1); 
         }
         return det;
     }
