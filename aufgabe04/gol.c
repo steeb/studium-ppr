@@ -3,6 +3,10 @@
 #include <limits.h>
 #include <string.h>
 
+#ifdef FOOBAR
+    #include <unistd.h>
+#endif
+
 /* Anzhal Spielfeld Zeilen */
 #define ALL_ROWS 4
 /* Anzahl Spielfeld Spalten */
@@ -38,6 +42,7 @@ DIRECTION;
 /* In dieser Variable wird die aktuelle Generation abgelegt */
 unsigned char generation[ARRAY_SIZE];
 
+/* In dieser Variable wird die neue Generation erzeugt. */
 unsigned char next_generation[ARRAY_SIZE];
 
 /**
@@ -56,6 +61,14 @@ void map_pos_to_generation_array (const unsigned int pos_nr,
     *vec_bit_pos = pos_nr % CHAR_BIT;
 }
 
+/**
+ * Errechnet zu der pos_nr im linearisierten Spielfeld die x,y Koordinaten im
+ * Spielfeld.
+ *
+ * @param pos_nr Position im Spielfeld
+ * @param x X-Koordinate
+ * @param y Y-Koordinate
+ */
 void map_pos_to_coords (const unsigned int pos_nr,
                         unsigned int * x,
                         unsigned int * y)
@@ -64,6 +77,14 @@ void map_pos_to_coords (const unsigned int pos_nr,
     *y = pos_nr / ALL_ROWS;
 }
 
+/**
+ * Errechner zu den x,y-Koordinanten, die echte Position im Speicher
+ *
+ * @param x X-Koordinate
+ * @param y X-Koordinate
+ * @param vec_pos Position im Vector
+ * @param vec_bit_pos welches bit im Vector
+ */
 void map_coords_to_generation_array (const unsigned int x,
                                      const unsigned int y,
                                      unsigned int * vec_pos,
@@ -73,6 +94,14 @@ void map_coords_to_generation_array (const unsigned int x,
     map_pos_to_generation_array (pos_nr, vec_pos, vec_bit_pos);
 }
 
+/**
+ * Prüft ob es auf dem übergebenden Feld eine lebende Kreatur gibt
+ *
+ * @param x X-Achse, ausgehen von oben links
+ * @param y y-Achse, ausgehen von oben links
+ *
+ * @return TRUE, fals eine Kreatur existiert
+ */
 BOOL is_creature_alive (const unsigned int x,
                         const unsigned int y)
 {
@@ -85,6 +114,12 @@ BOOL is_creature_alive (const unsigned int x,
     return (generation[vec_pos] & mask) == mask;
 }
 
+/**
+ * Erzeugt in auf dem übergebenen Feld eine Kreatur
+ *
+ * @param x X-Achse, ausgehen von oben links
+ * @param y y-Achse, ausgehen von oben links
+ */
 void create_creature (const unsigned int x,
                       const unsigned int y)
 {
@@ -95,6 +130,15 @@ void create_creature (const unsigned int x,
     next_generation[vec_pos] |= (unsigned char)1 << vec_bit_pos;
 }
 
+/**
+ * Prüft von einem Spielfeld und einer Richtung ausgehen ob ein Nachbar
+ * existiert.
+ *
+ * @param pos_nr liniarisierte Position des auszugehenden Feldes
+ * @param direction Richtung in der gesucht werden soll
+ *
+ * @return TRUE, fals ein Nachbar existiert
+ **/
 BOOL is_neighbour_creature (const unsigned int pos_nr,
                             const DIRECTION direction)
 {
@@ -147,6 +191,13 @@ BOOL is_neighbour_creature (const unsigned int pos_nr,
     }
 }
 
+/**
+ * Zählt alle Nachbarn um einer Kreatur herum.
+ *
+ * @param pos_nr liniearisierte Position der zu untersuchenden Nachbarschaft
+ *
+ * @return Anzahl der Nachbarn
+ **/
 unsigned int count_neigtbour_creatures (const unsigned int pos_nr)
 {
     DIRECTION direction;
@@ -182,17 +233,19 @@ void print_horizontal_seperator (void)
 void print_generation (void)
 {
     unsigned int i;
-    unsigned int x;
-    unsigned int y;
+    unsigned int x = 0;
+    unsigned int y = 0;
 
     for (i = 0; i < CELLS; i++)
     {
         map_pos_to_coords (i, &x, &y);
+        /* Sind auf der linken Seite des Spielfelds */
         if (x == 0)
         {
             print_horizontal_seperator ();
         }
         printf ("| %c ", is_creature_alive (x, y) ? 'o' : ' ');
+        /* Sind auf der rechten Seite des Spielfelds */
         if (x == ALL_ROWS - 1)
         {
             printf ("|\n");
@@ -221,6 +274,8 @@ void set_generation_from_string (char string[])
 
 /**
  * Schreibt die momentane Generation in die die uebergebene Variable.
+ *
+ * @param string Das Array in welches geschrieben werden soll.
  */
 void get_generation_as_string (char string[])
 {
@@ -238,7 +293,10 @@ void get_generation_as_string (char string[])
     string[i] = '\0';
 }
 
-void clear_next_generation ()
+/**
+ * Löscht den Speicher in der die nächste Generation entsteht
+ */
+void clear_next_generation (void)
 {
     int i;
 
@@ -248,7 +306,12 @@ void clear_next_generation ()
     }
 }
 
-BOOL is_generation_equal ()
+/**
+ * Vergleicht die alte mit der neuen Generation.
+ *
+ * @return TRUE fals beide Generationen gleich sind.
+ */
+BOOL is_generation_equal (void)
 {
     int i;
 
@@ -297,6 +360,8 @@ BOOL set_next_generation (void)
         }
     }
     
+    /* Merken ob Generationen gleich waren und dann die alte mit der neuen
+     * ueberschreien */
     generation_equal = is_generation_equal ();
     memcpy (&generation, &next_generation, sizeof(generation));
 
@@ -321,7 +386,9 @@ void game_of_life (int max_generations)
         {
             return;
         }
+       #ifdef FOOBAR
         sleep (1);
+       #endif
         system("clear");
         print_generation ();
     }
