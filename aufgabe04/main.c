@@ -3,15 +3,17 @@
 
 int main (void)
 {
-    char spielfeld[] = "010"
-                       "000"
-                       "000";
-    char rueckgabe[CELLS + 1] = {0}; 
+    char spielfeld[] = "1010"
+                       "0100"
+                       "1010"
+                       "0000";
+    char rueckgabe[CELLS + 1] = {0};
+    unsigned int a;
+    unsigned char b;
 
     set_generation_from_string (spielfeld);
-    /*/print_generation ();
-    set_next_generation ();
-    print_generation ();*/
-    printf ("%d\n", count_neigtbour_creatures(4));
+    game_of_life (20);
+    
+
     return 0;
 }

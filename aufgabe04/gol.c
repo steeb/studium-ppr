@@ -4,9 +4,9 @@
 #include <string.h>
 
 /* Anzhal Spielfeld Zeilen */
-#define ALL_ROWS 3 
+#define ALL_ROWS 4
 /* Anzahl Spielfeld Spalten */
-#define ALL_COLUMNS 3 
+#define ALL_COLUMNS 4
 
 /* Anzahl aller Felder des Spielfelds */
 #define CELLS ALL_ROWS * ALL_COLUMNS
@@ -60,8 +60,8 @@ void map_pos_to_coords (const unsigned int pos_nr,
                         unsigned int * x,
                         unsigned int * y)
 {
-    *x = pos_nr / ALL_COLUMNS;
-    *y = pos_nr % ALL_ROWS;
+    *x = pos_nr % ALL_ROWS;
+    *y = pos_nr / ALL_ROWS;
 }
 
 void map_coords_to_generation_array (const unsigned int x,
@@ -69,13 +69,12 @@ void map_coords_to_generation_array (const unsigned int x,
                                      unsigned int * vec_pos,
                                      unsigned char * vec_bit_pos)
 {
-    unsigned int pos_nr = ALL_COLUMNS * x + y;
-    printf ("  %d\n", pos_nr);
+    unsigned int pos_nr = ALL_ROWS * y + x;
     map_pos_to_generation_array (pos_nr, vec_pos, vec_bit_pos);
 }
 
-BOOL is_creature (const unsigned int x,
-                  const unsigned int y)
+BOOL is_creature_alive (const unsigned int x,
+                        const unsigned int y)
 {
     unsigned char mask;
     unsigned int vec_pos = 0;
@@ -83,19 +82,7 @@ BOOL is_creature (const unsigned int x,
 
     map_coords_to_generation_array (x, y, &vec_pos, &vec_bit_pos);
     mask = (unsigned char)1 << vec_bit_pos;
-    printf ("%d x %d: %d\n", x, y, vec_bit_pos);
     return (generation[vec_pos] & mask) == mask;
-}
-
-void kill_creature (const unsigned int x,
-                    const unsigned int y)
-{
-    unsigned int vec_pos = 0;
-    unsigned char vec_bit_pos = 0;
-
-    map_coords_to_generation_array (x, y, &vec_pos, &vec_bit_pos);
-    next_generation[vec_pos] = generation[vec_pos] 
-        ^ ~((unsigned char)1 << vec_bit_pos);
 }
 
 void create_creature (const unsigned int x,
@@ -105,8 +92,7 @@ void create_creature (const unsigned int x,
     unsigned char vec_bit_pos = 0;
 
     map_coords_to_generation_array (x, y, &vec_pos, &vec_bit_pos);
-    next_generation[vec_pos] = generation[vec_pos] 
-        | (unsigned char)1 << vec_bit_pos;
+    next_generation[vec_pos] |= (unsigned char)1 << vec_bit_pos;
 }
 
 BOOL is_neighbour_creature (const unsigned int pos_nr,
@@ -121,42 +107,42 @@ BOOL is_neighbour_creature (const unsigned int pos_nr,
         case TOPLEFT:
             return (x <= 0 || y <= 0) 
                 ? FALSE 
-                : is_creature (x - 1, y - 1);
+                : is_creature_alive (x - 1, y - 1);
             break;
         case TOP:
             return (y <= 0) 
                 ? FALSE 
-                : is_creature (x, y - 1);
+                : is_creature_alive (x, y - 1);
             break;
         case TOPRIGHT:
             return (x >= ALL_ROWS - 1 || y <= 0) 
                 ? FALSE 
-                : is_creature (x + 1, y - 1);
+                : is_creature_alive (x + 1, y - 1);
             break;
         case RIGHT:
             return (x >= ALL_ROWS - 1) 
                 ? FALSE
-                : is_creature (x + 1, y);
+                : is_creature_alive (x + 1, y);
             break;
         case BOTTOMRIGHT:
             return (x >= ALL_ROWS - 1 || y >= ALL_COLUMNS - 1)
                 ? FALSE
-                : is_creature (x + 1, y + 1);
+                : is_creature_alive (x + 1, y + 1);
             break;
         case BOTTOM:
             return (y >= ALL_COLUMNS - 1)
                 ? FALSE
-                : is_creature (x, y + 1);
+                : is_creature_alive (x, y + 1);
             break;
         case BOTTOMLEFT:
             return (x <= 0 || y > ALL_COLUMNS - 1)
                 ? FALSE
-                : is_creature (x - 1, y + 1);
+                : is_creature_alive (x - 1, y + 1);
             break;
         case LEFT:
             return (x <= 0)
                 ? FALSE
-                : is_creature (x - 1, y);
+                : is_creature_alive (x - 1, y);
             break;
     }
 }
@@ -166,7 +152,7 @@ unsigned int count_neigtbour_creatures (const unsigned int pos_nr)
     DIRECTION direction;
     unsigned int creatures = 0;
 
-    for (direction = TOPLEFT; direction < LEFT; direction++)
+    for (direction = TOPLEFT; direction <= LEFT; direction++)
     {
         if (is_neighbour_creature (pos_nr, direction))
         {
@@ -183,7 +169,7 @@ void print_horizontal_seperator (void)
 {
     int i; /* Laufvariable für die Länge der Zeile */
 
-    for (i = 0; i < ALL_COLUMNS; i++)
+    for (i = 0; i < ALL_ROWS; i++)
     {
         printf ("+---");
     }
@@ -196,19 +182,18 @@ void print_horizontal_seperator (void)
 void print_generation (void)
 {
     unsigned int i;
-    unsigned char mask;
     unsigned int x;
     unsigned int y;
 
     for (i = 0; i < CELLS; i++)
     {
         map_pos_to_coords (i, &x, &y);
-        if (y == 0)
+        if (x == 0)
         {
             print_horizontal_seperator ();
         }
-        printf ("| %c ", is_creature (x, y) ? 'o' : ' ');
-        if (y == ALL_ROWS - 1)
+        printf ("| %c ", is_creature_alive (x, y) ? 'o' : ' ');
+        if (x == ALL_ROWS - 1)
         {
             printf ("|\n");
         }
@@ -253,6 +238,30 @@ void get_generation_as_string (char string[])
     string[i] = '\0';
 }
 
+void clear_next_generation ()
+{
+    int i;
+
+    for (i = 0; i < ARRAY_SIZE; i++)
+    {
+        next_generation[i] = 0;
+    }
+}
+
+BOOL is_generation_equal ()
+{
+    int i;
+
+    for (i = 0; i < ARRAY_SIZE; i++)
+    {
+        if (generation[i] != next_generation[i]) 
+        {
+            return FALSE;
+        }
+    }
+    return TRUE;
+}
+
 /**
  * Es wird die naechste Generation erzeugt.
  *
@@ -261,6 +270,9 @@ void get_generation_as_string (char string[])
 BOOL set_next_generation (void)
 {
     unsigned int i;
+    BOOL generation_equal;
+
+    clear_next_generation ();
 
     for (i = 0; i < CELLS; i++)
     {
@@ -269,27 +281,26 @@ BOOL set_next_generation (void)
         unsigned int y = 0;
 
         map_pos_to_coords (i, &x, &y);
-        if (!is_creature (x, x))
+        if (is_creature_alive (x, y))
         {
-            printf ("%d x %d: %d neigtbours (dead)\n", x, y, creatures);
-            if (creatures == 3)
+            if (creatures == 2 || creatures == 3)
             {
                 create_creature (x, y);
             }
         }
         else
         {
-            printf ("%d x %d: %d neigtbours (live)\n", x, y, creatures);
-            if (creatures == 2 || creatures == 3)
+            if (creatures == 3)
             {
                 create_creature (x, y);
             }
         }
     }
-
+    
+    generation_equal = is_generation_equal ();
     memcpy (&generation, &next_generation, sizeof(generation));
 
-    return FALSE;
+    return generation_equal;
 }
 
 /**
@@ -302,8 +313,18 @@ BOOL set_next_generation (void)
  */
 void game_of_life (int max_generations)
 {
-
+    system("clear"); 
+    print_generation ();
+    for (; max_generations > 0; max_generations--)
+    {
+        if (set_next_generation ())
+        {
+            return;
+        }
+        sleep (1);
+        system("clear");
+        print_generation ();
+    }
 }
 
-/* system("echo -e \"\\E[2J\""); */
 
