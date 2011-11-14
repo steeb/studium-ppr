@@ -8,9 +8,9 @@
 #endif
 
 /* Anzhal Spielfeld Zeilen */
-#define ALL_ROWS 4
+#define ALL_ROWS 10
 /* Anzahl Spielfeld Spalten */
-#define ALL_COLUMNS 4
+#define ALL_COLUMNS 10
 
 /* Anzahl aller Felder des Spielfelds */
 #define CELLS ALL_ROWS * ALL_COLUMNS
@@ -365,7 +365,7 @@ BOOL set_next_generation (void)
     generation_equal = is_generation_equal ();
     memcpy (&generation, &next_generation, sizeof(generation));
 
-    return generation_equal;
+    return !generation_equal;
 }
 
 /**
@@ -382,7 +382,7 @@ void game_of_life (int max_generations)
     print_generation ();
     for (; max_generations > 0; max_generations--)
     {
-        if (set_next_generation ())
+        if (!set_next_generation ())
         {
             return;
         }
