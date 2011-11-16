@@ -265,6 +265,8 @@ void set_generation_from_string (char string[])
     unsigned int vec_pos = 0;
     unsigned char vec_bit_pos = 0;
 
+    memset (generation, 0, ARRAY_SIZE);
+
     for (i = 0; i < CELLS; i++)
     {
         map_pos_to_generation_array (i, &vec_pos, &vec_bit_pos);
