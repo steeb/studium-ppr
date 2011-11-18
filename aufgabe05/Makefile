@@ -3,21 +3,21 @@ DEBUG	= -g
 CFLAGS  = -Wall -Wextra -std=c89 -pedantic-errors -c
 LFLAGS	= -Wall -Wextra
 
-OBJ		= main.o rsa_keys.o
-OBJD	= main.od rsa_keys.od
+OBJ		= main.o rsa_keys.o crypt.o ui.o
+OBJD	= main.od rsa_keys.od crypt.od ui.od
 
 EXE		= rsa
 
 all: splint $(EXE) doxygen
 
 $(EXE): $(OBJ)
-	$(CC) $(LFLAGS) -o $@ $< 
+	$(CC) $(LFLAGS) -o $@ $(OBJ)
 
 %.o: %.c
 	$(CC) $(CFLAGS) $<
 
 debug: $(OBJD)
-	$(CC) $(LFLAGS) $(DEBUG) -o $(EXE)$@ $<
+	$(CC) $(LFLAGS) $(DEBUG) -o $(EXE)$@ $(OBJD)
 
 %.od: %.c
 	$(CC) $(CFLAGS) $(DEBUG) -o $@ $<
