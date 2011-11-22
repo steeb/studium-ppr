@@ -41,7 +41,7 @@ extern void encrypt (unsigned char msg[],
         code[i] = modular_exponentiation (msg[i], e, n);
         i++;
     }
-    code[i] = '\0';
+    code[i] = -1;
 }
 
 extern void decrypt (int code[],
@@ -51,7 +51,7 @@ extern void decrypt (int code[],
     int n = get_rsa_module ();      /* Gemeinsames Modul */
     int d = get_secret_exponent (); /* Geheimer Exponent */
 
-    while (code[i] != '\0')
+    while (code[i] != -1)
     {
         msg[i] = (unsigned char)modular_exponentiation (code[i], d, n);
         i++;

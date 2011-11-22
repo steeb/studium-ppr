@@ -15,6 +15,10 @@ extern void read_message (unsigned char msg[])
         readed_chars++;
     }
     msg[readed_chars] = '\0';
+    if (readed_chars == MAX_INPUT_CHARS)
+    {
+        while (getchar () != '\n');
+    }
 }
 
 extern void write_message (unsigned char msg[])
@@ -27,9 +31,9 @@ extern void write_code (int code[])
     int i; /* Laufvariable */
 
     printf ("Code: ");
-    for (i = 0; code[i] != '\0'; i++)
+    for (i = 0; code[i] != -1; i++)
     {
-        printf ("%d %c ", code[i], code[i + 1] != '\0' ? '|' : ' ');
+        printf ("%d %c ", code[i], code[i + 1] != -1 ? '|' : ' ');
     }
     printf ("\n");
 }
