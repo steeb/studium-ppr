@@ -4,7 +4,7 @@ CFLAGS  = -Wall -Wextra -std=c89 -pedantic-errors -c
 LFLAGS	= -Wall -Wextra
 
 OBJ		= main.o string_formatter.o
-OBJD	= main.od rsa_string_formatter.o
+OBJD	= main.od string_formatter.od
 
 EXE		= stringFormatter
 
