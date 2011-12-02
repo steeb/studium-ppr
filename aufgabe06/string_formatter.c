@@ -69,6 +69,11 @@ extern void justify_line (char *p_line,
         spaces_before_word = total_spaces / (words - 1);
         extra_spaces = (signed int)total_spaces % (words - 1);
     }
+    if (target_line_length <= letters + words - 1)
+    {
+        spaces_before_word = 1;
+        extra_spaces = 0;
+    }
     p_word = strtok (p_line, delim);
     while (p_word != NULL)
     {
