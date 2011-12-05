@@ -56,6 +56,7 @@ static void read_args (int argc,
                        FILE **out,
                        int *linelength)
 {
+    char *filename = NULL;
     *argv++;
 
     while (argc > 1)
@@ -72,23 +73,41 @@ static void read_args (int argc,
         {
             *argv++;
             argc--;
+            if (filename != NULL)
+            {
+                if (strcmp (*argv, filename) == 0)
+                {
+                    fprintf (stderr, "in and output file are the same\n");
+                    exit (EXIT_FAILURE);
+                }
+            }
             *in = fopen (*argv, READ_ONLY);
             if (*in == NULL)
             {
                 fprintf (stderr, "%s: %s\n", *argv, strerror (errno));
                 exit (EXIT_FAILURE);
             }
+            filename = *argv;
         }
         else if (strcmp (*argv, "-o") == 0)
         {
             *argv++;
             argc--;
+            if (filename != NULL)
+            {
+                if (strcmp (*argv, filename) == 0)
+                {
+                    fprintf (stderr, "in and output file are the same\n");
+                    exit (EXIT_FAILURE);
+                }
+            }
             *out = fopen (*argv, READ_WRITE);
             if (*out == NULL)
             {
                 fprintf (stderr, "%s: %s\n", *argv, strerror (errno));
                 exit (EXIT_FAILURE);
             }
+            filename = *argv;
         }
         else if (strcmp (*argv, "-l") == 0)
         {
@@ -112,7 +131,7 @@ static void read_args (int argc,
 
     if (*in == NULL)
     {
-        fprintf (stderr, "Paramter -i erforderlich");
+        fprintf (stderr, "Paramter -i erforderlich\n");
         exit (EXIT_FAILURE);
     }
 }
