@@ -39,7 +39,7 @@ extern void heap_destroy (void)
 
 extern void heap_insert (char element)
 {
-    if (size % ALLOCSIZE == 0)
+    if (size != 0 && size % ALLOCSIZE == 0)
     {
         root_element = realloc (root_element, sizeof (char) * (size + ALLOCSIZE));
         if (root_element == NULL)
@@ -48,12 +48,34 @@ extern void heap_insert (char element)
             exit (EXIT_FAILURE);
         }
     }
-    /*TODO element einfügen */
+    /* element einfügen ans ende des baums einfügen */
+    *(root_element + size) = element;
+    size++;
+    /* TODO heapify */
 }
 
 extern BOOL heap_extract_min (char *min_element)
 {
-    
+    if (size == 0)
+    {
+        return FALSE;
+    }
+    {
+        char *min_element = malloc (sizeof (char));
+        if (min_element == NULL)
+        {
+            fprintf (stderr, "error while allocating: %s", strerror (errno));
+            exit (EXIT_FAILURE);
+        }
+        *min_element = *root_element;
+        memmove (root_element, root_element + 1, size - 1);
+        size--;
+        if (size % ALLOCSIZE == 0)
+        {
+            root_element = realloc (root_element, sizeof (char) * size);
+        }
+        return TRUE;
+    }
 }
 
 extern void heap_print (void)
