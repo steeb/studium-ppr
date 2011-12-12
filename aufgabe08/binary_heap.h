@@ -32,7 +32,7 @@ extern void heap_insert (char element);
 /**
  * gibt das kleinste Element zurück.
  *
- * @param Adresse an der das Element geschrieben werden soll
+ * @param min_element Adresse an der das Element geschrieben werden soll
  *
  * @return true, falls der heap leer ist.
  */
