@@ -79,17 +79,48 @@ extern void heap_insert (char element)
 
 extern BOOL heap_extract_min (char *min_element)
 {
+    unsigned int parent_pos;
+    unsigned int smallest;
     if (size == 0)
     {
         return FALSE;
     }
     /* das kleinste element ist das oberste */
     *min_element = *root_element;
-    memmove (root_element, root_element + 1, size - 1);
+    /* letzes element nach oben schieben */
+    *root_element = root_element[size - 1];
     size--;
     if (size % ALLOCSIZE == 0)
     {
         root_element = realloc (root_element, sizeof (char) * size);
+    }
+    /* heapify */
+    parent_pos = 1;
+    smallest = parent_pos;
+    while (parent_pos <= size) {
+        /* linken zweig prüfen */
+        if (parent_pos * 2 <= size 
+                && root_element[parent_pos * 2 - 1] < root_element[parent_pos - 1])
+        {
+            smallest = parent_pos * 2;
+        }
+        /* rechten zweig prüfen */
+        if (parent_pos * 2 + 1<= size 
+                && root_element[parent_pos * 2] < root_element[smallest - 1])
+        {
+            smallest = parent_pos * 2 + 1;
+        }
+        if (smallest != parent_pos)
+        {
+            char tmp = root_element[parent_pos - 1];
+            root_element[parent_pos - 1] = root_element[smallest - 1];
+            root_element[smallest - 1] = tmp;
+        }
+        else
+        {
+            return TRUE;
+        }
+        parent_pos = smallest;
     }
     return TRUE;
 }
