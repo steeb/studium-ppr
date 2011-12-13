@@ -5,10 +5,14 @@ LFLAGS	= -Wall -Wextra
 
 OBJ		= main.o binary_heap.o
 OBJD	= main.od binary_heap.od
+TEST	= test.o binary_heap.o
 
 EXE		= binaryHeap
 
 all: $(EXE) doxygen
+
+test: $(TEST)
+	$(CC) $(LFLAGS) -o $@ $(TEST)
 
 $(EXE): $(OBJ)
 	$(CC) $(LFLAGS) -o $@ $(OBJ)
