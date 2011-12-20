@@ -31,6 +31,7 @@ extern void heap_init (void)
         fprintf (stderr, "error while allocating: %s", strerror (errno));
         exit (EXIT_FAILURE);
     }
+    size = 0;
 }
 
 extern void heap_destroy (void)
